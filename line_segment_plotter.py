@@ -4,8 +4,9 @@ import matplotlib.pyplot as plt  # Import after setting the backend
 
 
 class LineSegmentPlotter:
-    def __init__(self, line_segments):
+    def __init__(self, line_segments, query_point):
         self.line_segments = line_segments
+        self.query_point = query_point
 
     def plot(self):
         plt.figure(figsize=(8, 8))
@@ -15,9 +16,24 @@ class LineSegmentPlotter:
         y_coords = []
 
         for segment in self.line_segments:
-            plt.plot([segment.x1, segment.x2], [segment.y1, segment.y2], marker='o')
-            x_coords.extend([segment.x1, segment.x2])
-            y_coords.extend([segment.y1, segment.y2])
+            x1, y1, x2, y2 = segment.get_coordinates()
+            
+            # Plot the line segment
+            plt.plot([x1, x2], [y1, y2], marker='o')
+            
+            # Collect coordinates for limits
+            x_coords.extend([x1, x2])
+            y_coords.extend([y1, y2])
+
+
+        # Include the query point in the coordinates
+        if self.query_point:
+            x_coords.append(self.query_point.x)
+            y_coords.append(self.query_point.y)
+
+            # Plot the query point
+            plt.plot(self.query_point.x, self.query_point.y, 'ro')  # Red dot
+            plt.text(self.query_point.x, self.query_point.y, ' p', color='red', fontsize=12, verticalalignment='bottom', horizontalalignment='left')
 
         # Calculate the limits based on the coordinates
         x_min, x_max = min(x_coords), max(x_coords)
