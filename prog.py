@@ -34,7 +34,12 @@ with open(input_file, "r") as file:
             print("Expected format: 'x1 y1 x2 y2 \\n' or 'x y \\n' ")
             print("where x and y are numbers seperate by any delimiter.")
             sys.exit(1) 
-            
+
+
+if query_point is None:  
+    print("Error: Query point not found in data file.")
+    print("Expected format: 'x y \\n' ")
+    sys.exit(1)   
 
 
 
