@@ -6,7 +6,16 @@ from line_segment_plotter import LineSegmentPlotter
 # Regular expression pattern to match numbers, handling various separators
 coordinate_pattern = re.compile(r"[-+]?\d*\.?\d+(?:[eE][-+]?\d+)?")
 
-input_file = input("File name: ")
+input_file = None
+
+if len(sys.argv) > 2:
+    print("Error: Too many arguments.")
+    exit()
+elif len(sys.argv) == 2:
+    input_file = sys.argv[1]
+else:
+    input_file = input("File name: ")
+
 line_segments: LineSegment = []
 query_point: Point = None
 
