@@ -5,6 +5,11 @@ class Point:
         self.line_segment = None
         self.angle_to_q : float = None
 
+    def __eq__(self, other):
+        if isinstance(other, Point):
+            return (self.x == other.x and self.y == other.y)
+        return False
+
     def __str__(self):
         return f"({self.x}, {self.y})"
     
