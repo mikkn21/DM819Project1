@@ -1,4 +1,4 @@
-from line_segment import LineSegment, Point
+from line_segment import LineSegment, Point, Event
 from bintrees import RBTree
 import math
 import sys
@@ -9,39 +9,39 @@ def sweep_line_alg(line_segments: list[LineSegment], query_point: Point):
     """
     status = RBTree()
 
-    event_points: list[Point] = []
+    event_points: list[Event] = create_events(line_segments, query_point)
+    event_points.sort(key=lambda event: (event.angle, event.event_type != "start", event.dist if event.event_type == "start" else -event.dist))
     
-    # Calculate the angle between the query point and the line segments
-    for line in line_segments:
-        p1_angle = calculate_angle(line.p1, query_point)
-        line.p1.angle_to_q = p1_angle
-        event_points.append(line.p1)
+    for event in event_points:
+        print(event)
+    
+        #sys.exit() 
 
-        p2_angle = calculate_angle(line.p2, query_point)
-        line.p2.angle_to_q = p2_angle
-        event_points.append(line.p2)
-
-    # Events points ordered by angle from query point 
-    event_points.sort(key = lambda x: x.angle_to_q) # RETURN HERE LATER FOR DISTANCE
-
+    # for event in event_points:
+    #     print(event)
 
     # Initialise status with the segments that intersect the sweepline from the start.
-    sweep_end_point: Point = Point(x = (sys.maxsize * -1), y = query_point.y)
-    for line in line_segments:
-        intersection_point = line_intersection(line.p1, line.p2, query_point, sweep_end_point)
-        if intersection_point in event_points:
-            event_points.remove(intersection_point)
-        if intersection_point is not None:
-            intersection_distance = euclidian_distance(intersection_point, query_point)
-            line.q_point_dist = intersection_distance
-            status.insert(key = line, value = intersection_distance)
-    see_line_segment(status)
+    # sweep_end_point: Point = Point(x = (sys.maxsize * -1), y = query_point.y)
+    # for line in line_segments:
+    #     intersection_point = line_intersection(line.p1, line.p2, query_point, sweep_end_point)
+    #     if intersection_point in event_points:
+    #         event_points.remove(intersection_point)
+    #     if intersection_point is not None:
+    #         intersection_distance = euclidian_distance(intersection_point, query_point)
+    #         line.q_point_dist = intersection_distance
+    #         status.insert(key = line, value = intersection_distance)
+    # see_line_segment(status)
 
 
 
-
-    for point in event_points:
-        if point.line_segment.q_point_dist is not None and status.__contains__(point.line_segment):
+    # Sweep line algorithm
+    for event in event_points:
+        if event.event_type == "start":
+            event.segment.q_point_dist = event.dist
+            status.insert(event.segment, event.segment.q_point_dist)
+        else: 
+            status.remove(event.segment)
+        """if event.line_segment.q_point_dist is not None and status.__contains__(point.line_segment):
             status.remove(point.line_segment)
         else:
             for line in status:
@@ -51,12 +51,8 @@ def sweep_line_alg(line_segments: list[LineSegment], query_point: Point):
                     line.q_point_dist = euclidian_distance(s_l_i_p, query_point)
                             
             point.line_segment.q_point_dist = euclidian_distance(point, query_point)
-            status.insert(key = point.line_segment, value = point.line_segment.q_point_dist)  
-        
+            status.insert(key = point.line_segment, value = point.line_segment.q_point_dist)  """
         see_line_segment(status)
-
-
-
     return [line for line in line_segments if line.seen]
              
 
@@ -90,6 +86,63 @@ def calculate_angle(p1 : Point, p2 : Point):
 
     return angle_degrees
 
+
+
+def dot(vA, vB):
+    return vA[0]*vB[0]+vA[1]*vB[1]
+
+
+def angle_between_lines(line1: LineSegment, line2: LineSegment):
+    # Direction vector of line1
+    u_x = line1.p2.x - line1.p1.x
+    u_y = line1.p2.y - line1.p1.y
+    # Direction vector of line2
+    v_x = line2.p2.x - line2.p1.x
+    v_y = line2.p2.y - line2.p1.y
+
+    # Compute the dot product and cross product of the direction vectors
+    dot_prod = u_x * v_x + u_y * v_y
+    cross_prod = u_x * v_y - u_y * v_x
+
+    # Calculate the angle in radians between the two vectors
+    angle_rad = math.atan2(cross_prod, dot_prod)
+    # Convert the angle from radians to degrees
+    angle_deg = math.degrees(angle_rad) % 360  # Ensure angle is between 0 and 360 degrees
+
+    return angle_deg
+
+
+
+
+
+def create_events(line_segments: LineSegment, query_point: Point) -> list[Event]:
+    event_points: list[Event] = []
+    sweep_line = LineSegment(query_point, Point(sys.maxsize * -1, query_point.y))
+    for line in line_segments:
+        p1_angle = angle_between_lines(LineSegment(query_point, line.p1), sweep_line)
+        p2_angle = angle_between_lines(LineSegment(query_point, line.p2), sweep_line)
+        p1_dist = euclidian_distance(line.p1, query_point)
+        p2_dist = euclidian_distance(line.p2, query_point)
+        # p2_angle = calculate_angle(query_point, line.p2)
+        # p1_dist = euclidian_distance(query_point, line.p1)
+        # p2_dist = euclidian_distance(query_point, line.p2)
+
+        if p1_angle == p2_angle:
+            if p1_dist < p2_dist:
+                event_points.append(Event(angle=p1_angle, dist=p1_dist, event_type="start", segment=line))
+                event_points.append(Event(angle=p2_angle, dist=p2_dist, event_type="end", segment=line))
+            else:
+                event_points.append(Event(angle=p2_angle, dist=p2_dist, event_type="start", segment=line))
+                event_points.append(Event(angle=p1_angle, dist=p1_dist, event_type="end", segment=line))
+        else:
+            if p1_angle < p2_angle:
+                event_points.append(Event(angle=p1_angle, dist=p1_dist, event_type="start", segment=line))
+                event_points.append(Event(angle=p2_angle, dist=p2_dist, event_type="end", segment=line))
+            else:
+                event_points.append(Event(angle=p2_angle, dist=p2_dist, event_type="start", segment=line))
+                event_points.append(Event(angle=p1_angle, dist=p1_dist, event_type="end", segment=line))
+    
+    return event_points
 
 
 def line_intersection(p1: Point, p2: Point, p3: Point, p4: Point):
