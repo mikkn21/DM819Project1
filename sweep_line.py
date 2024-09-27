@@ -13,24 +13,21 @@ def sweep_line_alg(line_segments: list[LineSegment], query_point: Point):
     event_points.sort(key=lambda event: (event.angle, event.event_type != "start", event.dist if event.event_type == "start" else -event.dist))
     
     for event in event_points:
-        print(event)
+        print(f"Event: {event}")
     
         #sys.exit() 
 
-    # for event in event_points:
-    #     print(event)
-
     # Initialise status with the segments that intersect the sweepline from the start.
-    # sweep_end_point: Point = Point(x = (sys.maxsize * -1), y = query_point.y)
-    # for line in line_segments:
-    #     intersection_point = line_intersection(line.p1, line.p2, query_point, sweep_end_point)
-    #     if intersection_point in event_points:
-    #         event_points.remove(intersection_point)
-    #     if intersection_point is not None:
-    #         intersection_distance = euclidian_distance(intersection_point, query_point)
-    #         line.q_point_dist = intersection_distance
-    #         status.insert(key = line, value = intersection_distance)
-    # see_line_segment(status)
+    sweep_end_point: Point = Point(x = (sys.maxsize * -1), y = query_point.y)
+    #for line in line_segments:
+    #    intersection_point = line_intersection(line.p1, line.p2, query_point, sweep_end_point)
+    #    if intersection_point is not None:
+    #        if intersection_point in event_points:
+    #            event_points.remove(intersection_point)
+    #        intersection_distance = euclidian_distance(intersection_point, query_point)
+    #        line.q_point_dist = intersection_distance
+    #        status.insert(key = line, value = intersection_distance)
+    #see_line_segment(status)
 
 
 
