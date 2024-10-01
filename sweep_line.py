@@ -88,10 +88,6 @@ def calculate_angle(p1 : Point, p2 : Point):
 
 
 
-def dot(vA, vB):
-    return vA[0]*vB[0]+vA[1]*vB[1]
-
-
 def angle_between_lines(line1: LineSegment, line2: LineSegment):
     # Direction vector of line1
     u_x = line1.p2.x - line1.p1.x
@@ -123,9 +119,7 @@ def create_events(line_segments: LineSegment, query_point: Point) -> list[Event]
         p2_angle = angle_between_lines(LineSegment(query_point, line.p2), sweep_line)
         p1_dist = euclidian_distance(line.p1, query_point)
         p2_dist = euclidian_distance(line.p2, query_point)
-        # p2_angle = calculate_angle(query_point, line.p2)
-        # p1_dist = euclidian_distance(query_point, line.p1)
-        # p2_dist = euclidian_distance(query_point, line.p2)
+
 
         if p1_angle == p2_angle:
             if p1_dist < p2_dist:
