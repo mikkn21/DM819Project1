@@ -26,6 +26,8 @@ with open(input_file, "r") as file:
     for line in file:
         line_number = line_number + 1
         coordinates = coordinate_pattern.findall(line)
+        if len(coordinates) == 0:
+            pass # do nothing
         if len(coordinates) == 4:
             x1, y1, x2, y2 = coordinates
             p1: Point = Point(x1, y1)
