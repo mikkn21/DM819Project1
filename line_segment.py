@@ -57,12 +57,26 @@ class LineSegment:
     def __lt__(self, other):
         #print(f"self: {self}, other: {other}")
         if isinstance(other, LineSegment):
-            print(f"query point: {self.query_point}, event point: {self.event_point}")
-            cx = max(self.p1.x, self.p2.x)
-            cy = max(other.p1.x, other.p2.x)
-            c = max(cx, cy)
-            self_intersection_point: Point = line_intersection(self.p1, self.p2, self.query_point, Point(self.event_point.x*c, self.event_point.y*c))
-            other_intersection_point: Point = line_intersection(other.p1, other.p2, self.query_point, Point(self.event_point.x*c, self.event_point.y*c))
+            # print(f"query point: {self.query_point}, event point: {self.event_point}")
+            
+            direction_vector_x = self.event_point.x - self.query_point.x
+            direction_vector_y = self.event_point.y - self.query_point.y
+
+            extend_factor = max(
+                euclidian_distance(self.query_point, self.p1),
+                euclidian_distance(self.query_point, self.p2),
+                euclidian_distance(self.query_point, other.p1),
+                euclidian_distance(self.query_point, other.p2))
+            
+            extention_point = Point(
+                self.query_point.x + direction_vector_x * extend_factor, 
+                self.query_point.y + direction_vector_y * extend_factor)
+            print(f"query point: {self.query_point}")
+            print(f"event point: {self.event_point}")
+            print(f"extention point: {extention_point}")
+
+            self_intersection_point: Point = line_intersection(self.p1, self.p2, self.query_point, extention_point)
+            other_intersection_point: Point = line_intersection(other.p1, other.p2, self.query_point, extention_point)
             return euclidian_distance(self_intersection_point, self.query_point) < euclidian_distance(other_intersection_point, self.query_point)
         return False
 
