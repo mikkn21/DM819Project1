@@ -22,6 +22,9 @@ def sweep_line_alg(line_segments: list[LineSegment], query_point: Point):
             event.segment.set_event_point(event.segment.p2)
             print("A")
             print_tree(status)
+            print(f"Event to remove: {event.segment}")
+            print(f"Triggered by this event: {event}\n")
+            #if status.__contains__(event.segment): print("segment is actually contained \n")
             status.remove(event.segment)
         see_line_segment(status)
     return [line for line in line_segments if line.seen]

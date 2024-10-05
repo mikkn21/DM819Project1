@@ -65,7 +65,6 @@ class LineSegment:
 
     def __lt__(self, other):
         if isinstance(other, LineSegment):
-            
             direction_vector_x = self.event_point.x - self.query_point.x
             direction_vector_y = self.event_point.y - self.query_point.y
 
@@ -91,7 +90,7 @@ class LineSegment:
                 print(f"self: {self}")
                 print(f"other: {other}")
                 print(f"query: {self.query_point}, extension: {extension_point}")
-                print(f"event: {self.event_point}")
+                print(f"event: {self.event_point}\n")
             # if self_intersection_point is None:
             #     return False
             # elif other_intersection_point is None:
@@ -100,6 +99,44 @@ class LineSegment:
             #     raise ValueError("Both intersection points are None")
             else: 
                 return euclidian_distance(self_intersection_point, self.query_point) < euclidian_distance(other_intersection_point, self.query_point)
+        return False
+    
+    def __gt__(self, other):
+        if isinstance(other, LineSegment):
+            direction_vector_x = self.event_point.x - self.query_point.x
+            direction_vector_y = self.event_point.y - self.query_point.y
+
+
+            norm_direction_x, norm_direction_y = normalize_vector(direction_vector_x, direction_vector_y)
+
+            farthest_distance = max(
+                euclidian_distance(self.query_point, self.p1),
+                euclidian_distance(self.query_point, self.p2),
+                euclidian_distance(self.query_point, other.p1),
+                euclidian_distance(self.query_point, other.p2)
+            )
+
+            extension_point = Point(
+                self.query_point.x + norm_direction_x * farthest_distance * 2,  # Extend twice as far as the farthest point
+                self.query_point.y + norm_direction_y * farthest_distance * 2
+            )
+            
+            self_intersection_point = line_intersection(self.p1, self.p2, self.query_point, extension_point)
+            other_intersection_point = line_intersection(other.p1, other.p2, self.query_point, extension_point)
+            if self_intersection_point is None or other_intersection_point is None:
+                print(f"None value is: self {self_intersection_point is None} or other {other_intersection_point is None}")
+                print(f"self: {self}")
+                print(f"other: {other}")
+                print(f"query: {self.query_point}, extension: {extension_point}")
+                print(f"event: {self.event_point}\n")
+            # if self_intersection_point is None:
+            #     return False
+            # elif other_intersection_point is None:
+            #     return True
+            # elif self_intersection_point is None and other_intersection_point is None:
+            #     raise ValueError("Both intersection points are None")
+            else: 
+                return euclidian_distance(self_intersection_point, self.query_point) > euclidian_distance(other_intersection_point, self.query_point)
         return False
 
 
