@@ -13,35 +13,44 @@ class Point:
 # event_point: Point # the current event point the sweep line is intersecting
 # query_point_global: Point # query point
 
+
+
 def line_intersection(p1: Point, p2: Point, p3: Point, p4: Point):
     """
     Find new intersections of the sweep line with the line segments
     """
     def det(a: Point, b: Point):
-        return a.x * b.y - a.y * b.x
+        return float(a.x * b.y - a.y * b.x)
     
+    epsilon = 1e-9
     xdiff = Point(p1.x - p2.x, p3.x - p4.x)
     ydiff = Point(p1.y - p2.y, p3.y - p4.y)
 
     div = det(xdiff, ydiff)
-    if div == 0:
+    if abs(div) < 1e-9:
         return None  # Lines do not intersect
 
     d = Point(det(p1, p2), det(p3, p4))
     x = det(d, xdiff) / div
     y = det(d, ydiff) / div
 
-    def is_between(a, b, c):
-        return min(a, b) <= c <= max(a, b)
 
-    if (is_between(p1.x, p2.x, x) and is_between(p1.y, p2.y, y) and
-        is_between(p3.x, p4.x, x) and is_between(p3.y, p4.y, y)):
+    def is_between(a:float, b:float , c:float , epsilon:float):
+        return min(a, b) - epsilon <= c <= max(a, b) + epsilon
+
+    if (is_between(p1.x, p2.x, x, epsilon) and is_between(p1.y, p2.y, y, epsilon) and
+        is_between(p3.x, p4.x, x, epsilon) and is_between(p3.y, p4.y, y, epsilon)):
         return Point(x, y)
     else:
         return None
     
 def euclidian_distance(p1: Point, p2: Point):
     return math.sqrt((p1.x - p2.x)**2 + (p1.y - p2.y)**2)
+
+
+def normalize_vector(dx:float, dy:float):
+    magnitude = math.sqrt(dx ** 2 + dy ** 2)
+    return float(dx / magnitude), float(dy / magnitude)
 
 class LineSegment:
     def __init__(self, p1 : Point, p2 : Point):
@@ -55,40 +64,49 @@ class LineSegment:
         self.event_point = event_point
 
     def __lt__(self, other):
-        #print(f"self: {self}, other: {other}")
         if isinstance(other, LineSegment):
-            # print(f"query point: {self.query_point}, event point: {self.event_point}")
             
             direction_vector_x = self.event_point.x - self.query_point.x
             direction_vector_y = self.event_point.y - self.query_point.y
 
-            extend_factor = max(
+
+            norm_direction_x, norm_direction_y = normalize_vector(direction_vector_x, direction_vector_y)
+
+            farthest_distance = max(
                 euclidian_distance(self.query_point, self.p1),
                 euclidian_distance(self.query_point, self.p2),
                 euclidian_distance(self.query_point, other.p1),
-                euclidian_distance(self.query_point, other.p2))
-            
-            extention_point = Point(
-                self.query_point.x + direction_vector_x * extend_factor, 
-                self.query_point.y + direction_vector_y * extend_factor)
-            print(f"query point: {self.query_point}")
-            print(f"event point: {self.event_point}")
-            print(f"extention point: {extention_point}")
+                euclidian_distance(self.query_point, other.p2)
+            )
 
-            self_intersection_point: Point = line_intersection(self.p1, self.p2, self.query_point, extention_point)
-            other_intersection_point: Point = line_intersection(other.p1, other.p2, self.query_point, extention_point)
-            return euclidian_distance(self_intersection_point, self.query_point) < euclidian_distance(other_intersection_point, self.query_point)
+            extension_point = Point(
+                self.query_point.x + norm_direction_x * farthest_distance * 2,  # Extend twice as far as the farthest point
+                self.query_point.y + norm_direction_y * farthest_distance * 2
+            )
+            
+            self_intersection_point = line_intersection(self.p1, self.p2, self.query_point, extension_point)
+            other_intersection_point = line_intersection(other.p1, other.p2, self.query_point, extension_point)
+            if self_intersection_point is None:
+                return False
+            elif other_intersection_point is None:
+                return True
+            elif self_intersection_point is None and other_intersection_point is None:
+                raise ValueError("Both intersection points are None")
+            else: return euclidian_distance(self_intersection_point, self.query_point) < euclidian_distance(other_intersection_point, self.query_point)
         return False
 
 
     def __eq__(self, other):
         if isinstance(other, LineSegment):
-            # print("i am in equal")
             return (math.isclose(self.p1.x, other.p1.x) and
                     math.isclose(self.p1.y, other.p1.y) and
                     math.isclose(self.p2.x, other.p2.x) and
                     math.isclose(self.p2.y, other.p2.y))
         return False
+    
+    def __hash__(self):
+        print("hashing")
+        return hash((round(self.p1.x, 9), round(self.p1.y, 9), round(self.p2.x, 9), round(self.p2.y, 9)))
 
 
     def __str__(self):
