@@ -12,44 +12,28 @@ def sweep_line_alg(line_segments: list[LineSegment], query_point: Point):
 
     event_points: list[Event] = create_events(line_segments, query_point, status)
     event_points.sort()
-
-    # for thing in status:
-    #     print(f"thing: {thing}")
-    # if status.is_empty():
-    #             print("Empty")
-    # print(" ")
     
     # Sweep line algorithm
     for event in event_points:
-        # print(f"Current event: {event} - {event.event_type}")
         if event.event_type == "start": 
-            # print("inserting")
             event.segment.set_event_point(event.segment.p1)
             status.insert(key = event.segment, value = None)
-            print(f"event insert: {event.segment}")
-            # for thing in status:
-            #     print(f"tree: {thing}")
-            # if status.is_empty():
-            #     print("Empty")
-            # print(" ")
         else: 
-            print(f"Event removed: {event}")
-            event.segment.set_event_point(event.segment.p1)
-            print(f"Trying to remove: {event.segment}")
-            if event.segment in status:
-                status.remove(event.segment)
-                print(f"Removed from tree: {event.segment}")
-            else:
-                print(f"Segment not found for removal: {event.segment}")
-            print(f"event remove: {event.segment}")
-            # for thing in status:
-            #     print(f"tree: {thing}")
-            # if status.is_empty():
-            #     print("Empty")
-            # print(" ")
+            event.segment.set_event_point(event.segment.p2)
+            print("A")
+            print_tree(status)
+            status.remove(event.segment)
         see_line_segment(status)
     return [line for line in line_segments if line.seen]
              
+
+
+def print_tree(status: RBTree):
+    for thing in status:
+        print(f"tree: {thing}")
+    if status.is_empty():
+        print("Empty")
+    print(" ")
 
 def see_line_segment(status: RBTree):
     """

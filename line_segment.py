@@ -86,13 +86,20 @@ class LineSegment:
             
             self_intersection_point = line_intersection(self.p1, self.p2, self.query_point, extension_point)
             other_intersection_point = line_intersection(other.p1, other.p2, self.query_point, extension_point)
-            if self_intersection_point is None:
-                return False
-            elif other_intersection_point is None:
-                return True
-            elif self_intersection_point is None and other_intersection_point is None:
-                raise ValueError("Both intersection points are None")
-            else: return euclidian_distance(self_intersection_point, self.query_point) < euclidian_distance(other_intersection_point, self.query_point)
+            if self_intersection_point is None or other_intersection_point is None:
+                print(f"None value is: self {self_intersection_point is None} or other {other_intersection_point is None}")
+                print(f"self: {self}")
+                print(f"other: {other}")
+                print(f"query: {self.query_point}, extension: {extension_point}")
+                print(f"event: {self.event_point}")
+            # if self_intersection_point is None:
+            #     return False
+            # elif other_intersection_point is None:
+            #     return True
+            # elif self_intersection_point is None and other_intersection_point is None:
+            #     raise ValueError("Both intersection points are None")
+            else: 
+                return euclidian_distance(self_intersection_point, self.query_point) < euclidian_distance(other_intersection_point, self.query_point)
         return False
 
 
