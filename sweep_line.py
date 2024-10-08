@@ -4,13 +4,13 @@ import math
 import sys
 import numpy as np
 
-def sweep_line_alg(line_segments: list[LineSegment], query_point: Point):
+def sweep_line_alg(line_segments: list, query_point: Point):
     """
     The Sweepline algorithm implementation
     """
-    status : RBTree[LineSegment] = RBTree()
+    status : RBTree = RBTree()
 
-    event_points: list[Event] = create_events(line_segments, query_point, status)
+    event_points: list = create_events(line_segments, query_point, status)
     event_points.sort()
     
     # Sweep line algorithm
@@ -58,11 +58,11 @@ def angle_between_lines(line1: LineSegment, line2: LineSegment):
     return angle_deg
 
 
-def create_events(line_segments: LineSegment, query_point: Point, status: RBTree) -> list[Event]:
+def create_events(line_segments: LineSegment, query_point: Point, status: RBTree) -> list:
     """
     Create the event points for the sweep line algorithm and initialise the status
     """
-    event_points: list[Event] = []
+    event_points: list = []
     sweep_line = LineSegment(query_point, Point(sys.maxsize * -1, query_point.y))
     for line in line_segments:
         line.query_point = query_point
