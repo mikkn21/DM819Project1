@@ -28,7 +28,6 @@ with open(input_file, "r") as file:
 
 
         coordinates = coordinate_pattern.findall(line)
-        print(coordinates)
         if len(coordinates) == 0:
             continue # Skip empty lines:
         if len(coordinates) == 4:
