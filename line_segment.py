@@ -10,12 +10,8 @@ class Point:
     def __str__(self):
         return f"({self.x}, {self.y})"
 
-# event_point: Point # the current event point the sweep line is intersecting
-# query_point_global: Point # query point
 
-
-
-def line_intersection(p1: Point, p2: Point, p3: Point, p4: Point):
+def line_intersection(p1: Point, p2: Point, query_point: Point, extenstion_point: Point):
     """
     Find new intersections of the sweep line with the line segments
     """
@@ -23,14 +19,30 @@ def line_intersection(p1: Point, p2: Point, p3: Point, p4: Point):
         return float(a.x * b.y - a.y * b.x)
     
     epsilon = 1e-9
-    xdiff = Point(p1.x - p2.x, p3.x - p4.x)
-    ydiff = Point(p1.y - p2.y, p3.y - p4.y)
+    xdiff = Point(p1.x - p2.x, query_point.x - extenstion_point.x)
+    ydiff = Point(p1.y - p2.y, query_point.y - extenstion_point.y)
 
     div = det(xdiff, ydiff)
-    if abs(div) < 1e-9:
-        return None  # Lines do not intersect
+    if abs(div) < epsilon:  # Lines are parallel or coincident
+        # Check for collinearity
+        if abs(det(Point(query_point.x - p1.x, query_point.y - p1.y), Point(extenstion_point.x - p1.x, extenstion_point.y - p1.y))) < epsilon:
+            
+            def overlap_1d(a1, a2, b1, b2):
+                """
+                check if two 1D intervals overlap
+                used in the collinear case
+                """
+                return max(min(a1, a2), min(b1, b2)) <= min(max(a1, a2), max(b1, b2)) + epsilon
 
-    d = Point(det(p1, p2), det(p3, p4))
+            if overlap_1d(p1.x, p2.x, query_point.x, extenstion_point.x) and overlap_1d(p1.y, p2.y, query_point.y, extenstion_point.y):
+                if euclidian_distance(p1, query_point) < euclidian_distance(p2, query_point):
+                    return p1
+                else:
+                    return p2
+        return None  
+
+
+    d = Point(det(p1, p2), det(query_point, extenstion_point))
     x = det(d, xdiff) / div
     y = det(d, ydiff) / div
 
@@ -39,9 +51,10 @@ def line_intersection(p1: Point, p2: Point, p3: Point, p4: Point):
         return min(a, b) - epsilon <= c <= max(a, b) + epsilon
 
     if (is_between(p1.x, p2.x, x, epsilon) and is_between(p1.y, p2.y, y, epsilon) and
-        is_between(p3.x, p4.x, x, epsilon) and is_between(p3.y, p4.y, y, epsilon)):
+        is_between(query_point.x, extenstion_point.x, x, epsilon) and is_between(query_point.y, extenstion_point.y, y, epsilon)):
         return Point(x, y)
     else:
+        print("Not between")
         return None
     
 def euclidian_distance(p1: Point, p2: Point):
@@ -97,6 +110,7 @@ class LineSegment:
             #     return True
             # elif self_intersection_point is None and other_intersection_point is None:
             #     raise ValueError("Both intersection points are None")
+            
             else: 
                 return euclidian_distance(self_intersection_point, self.query_point) < euclidian_distance(other_intersection_point, self.query_point)
         return False
@@ -148,10 +162,6 @@ class LineSegment:
                     math.isclose(self.p2.y, other.p2.y))
         return False
     
-    def __hash__(self):
-        print("hashing")
-        return hash((round(self.p1.x, 9), round(self.p1.y, 9), round(self.p2.x, 9), round(self.p2.y, 9)))
-
 
     def __str__(self):
         return f"{self.p1}, {self.p2}"
@@ -178,7 +188,7 @@ class Event:
                     if self.event_type == "start":
                         return self.dist < other.dist
                     else:
-                        return self.dist > other.dis
+                        return self.dist > other.dist
         return False
     
     def __str__(self) -> str:
