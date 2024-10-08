@@ -5,7 +5,7 @@ from line_segment_plotter import LineSegmentPlotter
 from sweep_line import sweep_line_alg, line_intersection
 
 # Regular expression pattern to match numbers, handling various separators
-coordinate_pattern = re.compile(r"[-+]?\d*\.?\d+(?:[eE][-+]?\d+)?")
+coordinate_pattern = re.compile(r"[-+]?\d*\.?\d+")
 
 input_file = None
 
@@ -25,9 +25,12 @@ with open(input_file, "r") as file:
     query_point_count = 0
     for line in file:
         line_number = line_number + 1
+
+
         coordinates = coordinate_pattern.findall(line)
+        print(coordinates)
         if len(coordinates) == 0:
-            pass # do nothing
+            continue # Skip empty lines:
         if len(coordinates) == 4:
             x1, y1, x2, y2 = coordinates
             p1: Point = Point(x1, y1)

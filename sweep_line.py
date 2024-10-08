@@ -20,11 +20,6 @@ def sweep_line_alg(line_segments: list[LineSegment], query_point: Point):
             status.insert(key = event.segment, value = None)
         else: 
             event.segment.set_event_point(event.segment.p2)
-            print("A")
-            print_tree(status)
-            print(f"Event to remove: {event.segment}")
-            print(f"Triggered by this event: {event}\n")
-            #if status.__contains__(event.segment): print("segment is actually contained \n")
             status.remove(event.segment)
         see_line_segment(status)
     return [line for line in line_segments if line.seen]
@@ -36,7 +31,6 @@ def print_tree(status: RBTree):
         print(f"tree: {thing}")
     if status.is_empty():
         print("Empty")
-    print(" ")
 
 def see_line_segment(status: RBTree):
     """
@@ -111,51 +105,6 @@ def create_events(line_segments: LineSegment, query_point: Point, status: RBTree
                     event_points.append(Event(angle=p1_angle, dist=p1_dist, event_type="start", segment=line))
                     event_points.append(Event(angle=p2_angle, dist=p2_dist, event_type="end", segment=line))
             status.insert(key = line, value = None)
-
-
-
-
-        # # Works because RBTree has duplicate protection
-        # if intersection_point is not None:
-        #     intersection_distance = euclidian_distance(intersection_point, query_point)
-        #     line.q_point_dist = intersection_distance
-            
-        #     line.set_event_point(intersection_point)
-        #     status.insert(key = line, value = None)
-            
-        
-        #     if p1_angle == p2_angle:
-        #         if p1_dist < p2_dist:
-        #             event_points.append(Event(angle=p1_angle, dist=p1_dist, event_type="end", segment=line))
-        #             event_points.append(Event(angle=p2_angle, dist=p2_dist, event_type="start", segment=line))
-        #         else:
-        #             event_points.append(Event(angle=p2_angle, dist=p2_dist, event_type="end", segment=line))
-        #             event_points.append(Event(angle=p1_angle, dist=p1_dist, event_type="start", segment=line))
-        #     else:
-        #         if p1_angle < p2_angle:
-                    
-        #             event_points.append(Event(angle=p1_angle, dist=p1_dist, event_type="end", segment=line))
-        #             event_points.append(Event(angle=p2_angle, dist=p2_dist, event_type="start", segment=line))
-        #         else:
-        #             event_points.append(Event(angle=p2_angle, dist=p2_dist, event_type="end", segment=line))
-        #             event_points.append(Event(angle=p1_angle, dist=p1_dist, event_type="start", segment=line))
-        
-        # else:   
-        #     if p1_angle == p2_angle:
-        #         if p1_dist < p2_dist:
-        #             event_points.append(Event(angle=p1_angle, dist=p1_dist, event_type="start", segment=line))
-        #             event_points.append(Event(angle=p2_angle, dist=p2_dist, event_type="end", segment=line))
-        #         else:
-        #             event_points.append(Event(angle=p2_angle, dist=p2_dist, event_type="start", segment=line))
-        #             event_points.append(Event(angle=p1_angle, dist=p1_dist, event_type="end", segment=line))
-        #     else:
-        #         if p1_angle < p2_angle:
-        #             event_points.append(Event(angle=p1_angle, dist=p1_dist, event_type="start", segment=line))
-        #             event_points.append(Event(angle=p2_angle, dist=p2_dist, event_type="end", segment=line))
-        #         else:
-        #             event_points.append(Event(angle=p2_angle, dist=p2_dist, event_type="start", segment=line))
-        #             event_points.append(Event(angle=p1_angle, dist=p1_dist, event_type="end", segment=line))
-        
     return event_points
 
 
