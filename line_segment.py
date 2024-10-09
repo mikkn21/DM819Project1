@@ -8,7 +8,7 @@ class Point:
         self.y = float(y) 
 
     def __str__(self):
-        return f"({self.x}, {self.y})"
+        return f"{self.x} {self.y}"
 
 
 def line_intersection(p1: Point, p2: Point, query_point: Point, extenstion_point: Point):
@@ -150,7 +150,7 @@ class LineSegment:
     
 
     def __str__(self):
-        return f"{self.p1}, {self.p2}"
+        return f"{self.p1} {self.p2}"
     
     def get_coordinates(self):
         """Returns the coordinates of the endpoints as a tuple (x1 y1 x2 y2)."""
