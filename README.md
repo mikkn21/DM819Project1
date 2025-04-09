@@ -5,7 +5,7 @@ This project was developed together with my fellow student [@Caerullean](https:/
 The geometric problem we are solving in this project is problem 2.14 from our course textbook *Computational Geometry: Algorithms and Applications (3rd Edition)*. 
 
 > [!Note]
-> For a more detailed description of the project and code, I recommend reading the [rapport](./DM819__Part_1.pdf).
+> For a more detailed description of the project and code, I recommend reading the [report](./DM819__Part_1.pdf).
 
 
 **Problem Description**:
